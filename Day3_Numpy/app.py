@@ -1,3 +1,18 @@
+# 📌 Mục tiêu:
+#
+# Hiểu NumPy và ứng dụng trong xử lý ma trận và tensor cho AI.
+# Biết cách tạo, truy cập và xử lý dữ liệu bằng NumPy.
+# Tính toán ma trận, chuẩn hóa dữ liệu, và làm việc với tensor – những kỹ năng cốt lõi khi xử lý dữ liệu cho mô hình AI.
+'''
+Khái niệm cần học trong NumPy
+🔹 NumPy Array – Mảng nhiều chiều cho dữ liệu số.
+🔹 Tạo và truy cập NumPy Array – Khởi tạo ma trận, tensor và cách truy cập phần tử.
+🔹 Tính toán trên ma trận – Cộng, trừ, nhân ma trận.
+🔹 Hàm thống kê – Tính trung bình, phương sai, độ lệch chuẩn trên dữ liệu.
+🔹 Chuẩn hóa và chuẩn hóa dữ liệu – Min-Max Scaling, Z-score Normalization.
+🔹 Tensor trong NumPy – 3D Tensor cho xử lý ảnh trong Deep Learning.
+'''
+
 import numpy as np
 from numpy.matrixlib.defmatrix import matrix
 

@@ -16,3 +16,4 @@ mean = np.mean(matrix)
 std = np.std(matrix)
 z_score_data = (matrix - mean) / std
 print("Dữ liệu sau Z-score Normalization:", z_score_data)
+## Mục tiêu: Numpy giúp hiểu rõ hơn về dữ liệu và tính toán dữ liệu nhanh chóng dễ dàng , giúp xác định bước pre-processing data more efficient
