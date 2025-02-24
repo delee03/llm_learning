@@ -1,27 +1,49 @@
 import torch
 from IPython.terminal.shortcuts.filters import PassThrough
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+import io
 import accelerate
-print(accelerate.__version__)
-from ml_model import predict_price
 
+from ml_model import predict_price
+from transformers import pipeline
 app = FastAPI()
+
+# API nhận file CSV và trả về dữ liệu đã chuẩn hóa
+@app.post("/upload-csv", summary="Upload a CSV file and normalize data")
+def upload_csv(file: UploadFile):
+    """
+        Uploads a CSV file and normalizes data using MinMaxScaler.
+    """
+    return {
+        "filename": file.filename
+    }
+    # # Đọc file CSV từ request
+    # content = await file.read()
+    # df = pd.read_csv(io.StringIO(content.decode("utf-8")))
+    #
+    # # Chuẩn hóa dữ liệu (Min-Max Scaling)
+    # scaler = MinMaxScaler()
+    # df_scaled = pd.DataFrame(scaler.fit_transform(df.iloc[:, 1:]), columns=df.columns[1:])
+    #
+    # return {"message": "Dữ liệu đã chuẩn hóa", "data": df_scaled.to_dict(orient="records")}
 
 @app.post("/echo/")
 def echo_message(message: str):
     return {"message_received": message}
 
 @app.get("/predict")
-def predict(area: float):
-    price = predict_price(area)
+async def predict(area: float):
+    price = await predict_price(area)
     return {
         "statusCode": 200,
         "message" : "Return value successfully",
         "Diện tích":area,
         "Giá dự đoán": price
     }
-from transformers import pipeline
+
 
 #Load model GPT-2 from HuggingFace by transformer lib
 pipe = pipeline("text-generation", model="openai-community/gpt2")
@@ -31,46 +53,6 @@ def generation(prompt: str):
     return {
         "Prompt": prompt,
         "Generated_text": output[0]["generated_text"]
-    }
-
-from transformers import AutoModelForCausalLM, AutoTokenizer
-
-# Load model and tokenizer
-model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-tokenizer = AutoTokenizer.from_pretrained(model_name, token=True)
-
-# Load model with device_map="auto" for optimized acceleration
-# Load model on CPU and disable FP8 quantization
-model = AutoModelForCausalLM.from_pretrained(
-    model_name, token=True, device_map="auto"
-)
-
-# Define request model
-class PromptRequest(BaseModel):
-    prompt: str
-
-
-@app.get("/generate-llama")
-def generatedeepseek(prompt: str):
-    #Format the message in chat format
-    messages = [
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ]
-    # Tokenize messages
-    input_text = tokenizer.apply_chat_template(messages, return_tensors="pt")
-    with torch.no_grad():
-         output = model.generate(input_text, max_length=100)
-
-    # Decode and print response
-    generated_text = tokenizer.batch_decode(output, skip_special_tokens=True)[0]
-    return {
-        "response": {
-            "Prompt": prompt,
-            "GenerateText": generated_text
-        }
     }
 
 
